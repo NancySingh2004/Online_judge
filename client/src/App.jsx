@@ -1,14 +1,27 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import Login from './pages/Login'
-import Register from './pages/Register'
-function App() {
+// ✅ CORRECT: App.jsx
+
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import ProblemList from './pages/ProblemList';
+import AddProblem from './pages/AddProblem';
+import EditProblem from './components/EditProblem';
+import ProblemDetails from './components/ProblemDetails';
+import SolveProblem from './components/SolveProblem';
+
+
+export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" />} />
+       <Route path="/" element={<ProblemList />} />
+        <Route path="/add" element={<AddProblem />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-    </Routes>
-  )
-}
+      <Route path="/edit/:id" element={<EditProblem />} />
+      <Route path="/problems/:id" element={<ProblemDetails />} />
+      <Route path="/solve/:id" element={<SolveProblem />} />
 
-export default App
+    </Routes>
+  );
+}
