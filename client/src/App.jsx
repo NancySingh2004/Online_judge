@@ -8,7 +8,8 @@ import ProblemList from './pages/ProblemList';
 import AddProblem from './pages/AddProblem';
 import EditProblem from './components/EditProblem';
 import ProblemDetails from './components/ProblemDetails';
-import SolveProblem from './components/SolveProblem';
+//import SolveProblem from './components/SolveProblem';
+import CodeEditor from './pages/CodeEditor';
 
 
 export default function App() {
@@ -20,7 +21,8 @@ export default function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/edit/:id" element={<EditProblem />} />
       <Route path="/problems/:id" element={<ProblemDetails />} />
-      <Route path="/solve/:id" element={<SolveProblem />} />
+      <Route path="/solve/:id" element={<CodeEditor />} />
+      <Route path="/code" element={<CodeEditor/>}/>
 
     </Routes>
   );

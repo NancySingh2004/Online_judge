@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const ProblemList = () => {
   const [problems, setProblems] = useState([]);
@@ -11,7 +13,7 @@ const ProblemList = () => {
 
   const fetchProblems = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/problems');
+      const res = await axios.get(`${API_BASE_URL}/api/problems`);
       setProblems(res.data);
     } catch (err) {
       console.error('Error fetching problems:', err);
@@ -21,7 +23,7 @@ const ProblemList = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Delete this problem?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/problems/${id}`);
+        await axios.delete(`${API_BASE_URL}/api/problems/${id}`);
         fetchProblems(); // Refresh list
       } catch (err) {
         console.error('Error deleting problem:', err);

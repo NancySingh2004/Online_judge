@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const AddProblem = () => {
   const [form, setForm] = useState({
@@ -23,7 +25,7 @@ const AddProblem = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/problems', form);
+      await axios.post(`${API_BASE_URL}/api/problems`, form);
       navigate('/');
     } catch (err) {
       console.error('Error creating problem:', err);

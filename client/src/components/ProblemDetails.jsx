@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 const ProblemDetails = () => {
   const { id } = useParams();
@@ -12,7 +14,7 @@ const ProblemDetails = () => {
   useEffect(() => {
     const fetchProblem = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/problems/${id}`);
+        const res = await axios.get(`${API_BASE_URL}/api/problems/${id}`);
         setProblem(res.data);
       } catch (err) {
         console.error('Error fetching problem:', err);
