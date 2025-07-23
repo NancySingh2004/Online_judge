@@ -1,6 +1,6 @@
 // ✅ CORRECT: App.jsx
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -12,16 +12,18 @@ import ProblemDetails from './components/ProblemDetails';
 import CodeEditor from './pages/CodeEditor';
 
 
+
 export default function App() {
+    const [selectedProblem, setSelectedProblem] = useState(null); 
   return (
     <Routes>
-       <Route path="/" element={<ProblemList />} />
+       <Route path="/" element={<ProblemList onSelectProblem={setSelectedProblem} />} />
         <Route path="/add" element={<AddProblem />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/edit/:id" element={<EditProblem />} />
       <Route path="/problems/:id" element={<ProblemDetails />} />
-      <Route path="/solve/:id" element={<CodeEditor />} />
+      <Route path="/solve/:id" element={<CodeEditor problem={selectedProblem} />} />
       <Route path="/code" element={<CodeEditor/>}/>
 
     </Routes>
