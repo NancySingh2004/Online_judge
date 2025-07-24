@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import API from '../api';
 import { useNavigate } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -12,7 +13,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await API.post('/login', form);
+      const res = await API.post(`${API_BASE_URL}/api/auth/login`, form);
       const { token, role, username } = res.data;
       localStorage.setItem('user', JSON.stringify({ token, role, username }));
       alert('Login successful!');

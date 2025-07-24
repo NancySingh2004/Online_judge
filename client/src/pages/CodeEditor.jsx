@@ -36,6 +36,13 @@ const CodeEditor = () => {
         onChange={(e) => setLanguage(e.target.value)}
       >
         <option value="python">Python</option>
+          <option value="cpp">C++</option>
+          <option value="java">Java</option>
+          <option value="c">C</option>
+          <option value="node">Node.js</option>
+          <option value="ruby">Ruby</option>
+
+
       </select>
 
       <label className="block mb-2 font-semibold">Code:</label>

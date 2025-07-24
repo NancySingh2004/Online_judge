@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import API from '../api';
 import { useNavigate } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -13,7 +14,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await API.post('/register', form);
+      await API.post(`${API_BASE_URL}/api/auth/register`, form);
       alert('Registered successfully!');
       navigate('/login');
     } catch (err) {
