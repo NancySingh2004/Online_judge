@@ -2,13 +2,52 @@ const Problem = require('../models/Problem');
 
 exports.createProblem = async (req, res) => {
   try {
-    const newProblem = new Problem(req.body);
-    await newProblem.save();
-    res.status(201).json(newProblem);
+    const {
+      title,
+      description,
+      difficulty,
+      inputFormat,
+      outputFormat,
+      sampleInput,
+      sampleOutput,
+      constraints,
+      testCases
+    } = req.body;
+
+    // Validate required fields
+    if (!title || !description || !Array.isArray(testCases) || testCases.length === 0) {
+      return res.status(400).json({ error: 'Title, description, and at least one test case are required.' });
+    }
+
+    // Check for duplicate title
+    const existing = await Problem.findOne({ title });
+    if (existing) {
+      return res.status(400).json({ error: 'Problem with this title already exists.' });
+    }
+
+    // Save problem
+    const newProblem = new Problem({
+      title,
+      description,
+      difficulty,
+      inputFormat,
+      outputFormat,
+      sampleInput,
+      sampleOutput,
+      constraints,
+      testCases
+    });
+
+    const savedProblem = await newProblem.save();
+
+    // Return full problem with _id for redirection
+    res.status(201).json(savedProblem);
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 exports.getProblems = async (req, res) => {
   try {
