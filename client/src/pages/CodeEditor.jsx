@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   FaPlay,
@@ -78,6 +79,39 @@ const CodeEditor = ({ problemId }) => {
       setLoading(false);
     }
   };
+  const navigate = useNavigate();
+
+const handleFinalSubmit = async () => {
+  setLoading(true);
+  try {
+    const res = await axios.post(`${API_BASE_URL}/api/code/submit`, {
+      language,
+      sourceCode,
+      testCases: allTestCases,
+      problemId,
+      problemName,
+    });
+
+    const verdict = res.data.results.every(r => r.verdict === "Accepted") ? "Accepted" : "Wrong Answer";
+
+    // Save to submission history
+    await axios.post(`${API_BASE_URL}/api/submissions`, {
+      problemId,
+      problemName,
+      language,
+      sourceCode,
+      verdict,
+      results: res.data.results
+    });
+
+    navigate(`/submissions/${problemId}`);
+  } catch (err) {
+    console.error("❌ Submission error:", err.message);
+    alert("Submission failed. Try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -137,6 +171,14 @@ const CodeEditor = ({ problemId }) => {
       >
         <FaPlay /> {loading ? "Running..." : "Run Code"}
       </button>
+      <button
+  onClick={handleFinalSubmit}
+  disabled={loading}
+  className={`mt-3 flex items-center justify-center gap-2 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition ${loading && "opacity-50 cursor-not-allowed"}`}
+>
+  📤 Submit
+</button>
+
 
       {verdict && (
         <div className="mt-6">

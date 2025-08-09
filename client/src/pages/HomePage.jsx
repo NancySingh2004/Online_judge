@@ -21,8 +21,7 @@ export default function HomePage() {
           </Link>
           <div className="space-x-6 hidden md:flex">
             <Link to="/problems" className="hover:text-indigo-400 flex items-center gap-1"><FaCode /> Problems</Link>
-            <Link to="/contests" className="hover:text-indigo-400 flex items-center gap-1"><FaTrophy /> Contests</Link>
-            <Link to="/leaderboard" className="hover:text-indigo-400 flex items-center gap-1"><FaChartLine /> Leaderboard</Link>
+            <Link to="/dashboard" className="hover:text-indigo-400 flex items-center gap-1"><FaChartLine /> Dashboard</Link>
             <Link to="/login" className="hover:text-indigo-400 flex items-center gap-1"><FaSignInAlt /> Login</Link>
             <Link to="/register" className="hover:text-indigo-400 flex items-center gap-1"><FaUserPlus /> Register</Link>
           </div>

@@ -7,6 +7,9 @@ const problemRoutes = require('./routes/problemRoutes');
 const codeRoutes = require('./routes/codeRoutes.js');
 const userRoutes = require("./routes/userRoutes");
 const homeRoute = require('./routes/homeRoute');
+const submissionRoutes = require('./routes/submission');
+
+
 
 
 
@@ -26,6 +29,9 @@ app.use('/api/problems', problemRoutes);
 app.use('/api/code', codeRoutes);
 app.use("/api/user", userRoutes);
 app.use('/api', homeRoute);
+app.use('/api/submissions', submissionRoutes);
+const aiReviewRoutes = require("./routes/aiReviewRoutes");
+app.use("/api/gemini", aiReviewRoutes);
 
 
 

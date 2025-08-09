@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const { authenticate } = require("../middleware/authMiddleware");
 const { getProfile } = require("../controllers/authController");
-const { getSubmissions } = require("../controllers/userController");
+const { getSubmissions, updateProfile } = require("../controllers/userController");
 
-router.get("/me", authenticate, getProfile);
-router.get("/submissions", authenticate, getSubmissions);
+router.get("/me",authenticate, getProfile);
+router.get("/submissions", authenticate,  getSubmissions);
+router.put("/update", authenticate, updateProfile);
 
 module.exports = router;

@@ -12,8 +12,9 @@ import EditProblem from './components/EditProblem';
 import CodeEditor from './pages/CodeEditor';
 import Dashboard from "./pages/Dashboard";
 import HomePage from './pages/HomePage';
-import Submissions from './pages/Submission';
 import ProblemPage from './pages/ProblemPage';
+import SubmissionsPage from './pages/SubmissionPage';
+import ProfilePage from './pages/ProfilePage';
 
 
 
@@ -33,8 +34,10 @@ export default function App() {
       <Route path="/solve/:id" element={<CodeEditor problem={selectedProblem} />} />
       <Route path="/code" element={<CodeEditor/>}/>
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/submissions" element={<Submissions />} />
+      <Route path="/submissions/:problemId" element={<SubmissionsPage />} />
       <Route path="/problems/:id" element={<ProblemPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
+
     </Routes>
   );
 }

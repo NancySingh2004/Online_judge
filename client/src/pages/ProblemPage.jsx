@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import CodeEditor from "./CodeEditor";
+import CodeReview from "../components/CodeReviewChatbot";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
@@ -9,6 +10,7 @@ const ProblemPage = () => {
   const { id } = useParams();
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -73,6 +75,7 @@ const ProblemPage = () => {
         problemId={problem._id}
         problemName={problem.title}
       />
+      <CodeReview/>
     </div>
   );
 };
