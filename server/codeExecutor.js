@@ -11,42 +11,61 @@ const executeCode = (language, code, input = "") => {
     const jobId = uuid();
 
     let fileExtension, compileCmd = "", runCmd = "", outputFile = "";
+    let fileName, className;
 
     switch (language) {
       case "python":
         fileExtension = "py";
-        runCmd = `python3 ${jobId}.py < ${jobId}.txt`;
+        fileName = `${jobId}.py`;
+        runCmd = `python3 ${fileName} < ${jobId}.txt`;
         break;
-      case "cpp":
-        fileExtension = "cpp";
-        compileCmd = `g++ ${jobId}.cpp -o ${jobId}.out`;
-        runCmd = `./${jobId}.out < ${jobId}.txt`;
-        outputFile = `${jobId}.out`;
-        break;
-      case "c":
-        fileExtension = "c";
-        compileCmd = `gcc ${jobId}.c -o ${jobId}.out`;
-        runCmd = `./${jobId}.out < ${jobId}.txt`;
-        outputFile = `${jobId}.out`;
-        break;
+
+      
+
+     case "cpp":
+  fileExtension = "cpp";
+  fileName = `${jobId}.cpp`;
+  compileCmd = `g++ "${fileName}" -o "${jobId}.exe"`;
+  runCmd = `"${jobId}.exe" < "${jobId}.txt"`;
+  outputFile = `${jobId}.exe`;
+  break;
+
+   case "c":
+  fileExtension = "c";
+  fileName = `${jobId}.c`;
+  compileCmd = `gcc "${fileName}" -o "${jobId}.exe"`;
+  // Windows safe: input file ko `type` karke exe ko feed karo
+  runCmd = `type "${jobId}.txt" | "${jobId}.exe"`;
+  outputFile = `${jobId}.exe`;
+  break;
+
+
+
       case "java":
         fileExtension = "java";
-        compileCmd = `javac Main.java`;
-        runCmd = `java Main < ${jobId}.txt`;
+        className = `Main${jobId.replace(/-/g, "")}`; // Unique class name
+        fileName = `${className}.java`;
+        code = code.replace(/public\s+class\s+\w+/, `public class ${className}`);
+        compileCmd = `javac ${fileName}`;
+        runCmd = `java ${className} < ${jobId}.txt`;
         break;
+
       case "node":
         fileExtension = "js";
-        runCmd = `node ${jobId}.js < ${jobId}.txt`;
+        fileName = `${jobId}.js`;
+        runCmd = `node ${fileName} < ${jobId}.txt`;
         break;
+
       case "ruby":
         fileExtension = "rb";
-        runCmd = `ruby ${jobId}.rb < ${jobId}.txt`;
+        fileName = `${jobId}.rb`;
+        runCmd = `ruby ${fileName} < ${jobId}.txt`;
         break;
+
       default:
         return reject(new Error("Unsupported language"));
     }
 
-    const fileName = language === "java" ? "Main.java" : `${jobId}.${fileExtension}`;
     const inputFile = `${jobId}.txt`;
     const filePath = path.join(codeFolder, fileName);
     const inputPath = path.join(codeFolder, inputFile);
@@ -64,7 +83,7 @@ const executeCode = (language, code, input = "") => {
         fs.unlinkSync(inputPath);
         if (outputFile && fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
         if (language === "java") {
-          const classFile = path.join(codeFolder, "Main.class");
+          const classFile = path.join(codeFolder, `${className}.class`);
           if (fs.existsSync(classFile)) fs.unlinkSync(classFile);
         }
 
@@ -78,6 +97,10 @@ const executeCode = (language, code, input = "") => {
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
       if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
       if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+      if (language === "java") {
+        const classFile = path.join(codeFolder, `${className}.class`);
+        if (fs.existsSync(classFile)) fs.unlinkSync(classFile);
+      }
       return reject(new Error("Internal error: " + err.message));
     }
   });

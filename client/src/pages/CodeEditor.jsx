@@ -1,3 +1,4 @@
+// CodeEditor.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -31,6 +32,8 @@ const CodeEditor = ({ problemId }) => {
   const [loading, setLoading] = useState(false);
   const [problemName, setProblemName] = useState("");
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchProblem = async () => {
       try {
@@ -43,7 +46,6 @@ const CodeEditor = ({ problemId }) => {
         console.error("Failed to fetch problem:", err);
       }
     };
-
     if (problemId) fetchProblem();
   }, [problemId]);
 
@@ -62,7 +64,7 @@ const CodeEditor = ({ problemId }) => {
       const res = await axios.post(`${API_BASE_URL}/api/code/submit`, {
         language,
         sourceCode,
-        testCases: allTestCases, // ✅ Includes both visible & hidden
+        testCases: allTestCases,
       });
 
       setOutput(res.data.results.map((r, i) =>
@@ -79,116 +81,101 @@ const CodeEditor = ({ problemId }) => {
       setLoading(false);
     }
   };
-  const navigate = useNavigate();
 
-const handleFinalSubmit = async () => {
-  setLoading(true);
-  try {
-    const res = await axios.post(`${API_BASE_URL}/api/code/submit`, {
-      language,
-      sourceCode,
-      testCases: allTestCases,
-      problemId,
-      problemName,
-    });
+  const handleFinalSubmit = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.post(`${API_BASE_URL}/api/code/submit`, {
+        language,
+        sourceCode,
+        testCases: allTestCases,
+        problemId,
+        problemName,
+      });
 
-    const verdict = res.data.results.every(r => r.verdict === "Accepted") ? "Accepted" : "Wrong Answer";
+      const verdict = res.data.results.every(r => r.verdict === "Accepted") ? "Accepted" : "Wrong Answer";
 
-    // Save to submission history
-    await axios.post(`${API_BASE_URL}/api/submissions`, {
-      problemId,
-      problemName,
-      language,
-      sourceCode,
-      verdict,
-      results: res.data.results
-    });
+      await axios.post(`${API_BASE_URL}/api/submissions`, {
+        problemId,
+        problemName,
+        language,
+        sourceCode,
+        verdict,
+        results: res.data.results
+      });
 
-    navigate(`/submissions/${problemId}`);
-  } catch (err) {
-    console.error("❌ Submission error:", err.message);
-    alert("Submission failed. Try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+      navigate(`/submissions/${problemId}`);
+    } catch (err) {
+      console.error("❌ Submission error:", err.message);
+      alert("Submission failed. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const [aiFeedback, setAIFeedback] = useState("");
+
+
+
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6 text-center flex items-center justify-center gap-2">
-        <FaCode /> {problemName || "Online Judge Code Runner"}
+    <div className="p-4 rounded-lg bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 shadow-md mt-6">
+      {/* Header */}
+      <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent flex items-center gap-2">
+        <FaCode /> {problemName || "Online Judge"}
       </h2>
 
-      <label className="block mb-2 font-semibold">
-        <FaFileAlt className="inline mr-1" /> Select Language:
-      </label>
-      <select
-        className="border p-2 rounded w-full mb-4"
-        value={language}
-        onChange={handleLanguageChange}
-      >
-        {Object.keys(languageTemplates).map((lang) => (
-          <option key={lang} value={lang}>{lang.toUpperCase()}</option>
-        ))}
-      </select>
+      {/* Language Selector */}
+      <div className="flex items-center gap-2 mb-4">
+        <FaFileAlt className="text-gray-300" />
+        <select
+          className="border p-2 rounded-md focus:ring-2 focus:ring-blue-400 focus:outline-none bg-gray-700 text-gray-200"
+          value={language}
+          onChange={handleLanguageChange}
+        >
+          {Object.keys(languageTemplates).map((lang) => (
+            <option key={lang} value={lang}>{lang.toUpperCase()}</option>
+          ))}
+        </select>
+      </div>
 
-      <label className="block mb-2 font-semibold">
-        <FaCode className="inline mr-1" /> Code:
-      </label>
+      {/* Code Editor */}
       <textarea
-        rows="10"
-        className="w-full border p-2 rounded mb-4 font-mono text-sm bg-gray-50"
+        rows="12"
+        className="w-full border p-4 rounded-md font-mono text-sm bg-gray-800 text-gray-100 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400"
         value={sourceCode}
         onChange={(e) => setSourceCode(e.target.value)}
       />
 
-      <h3 className="font-semibold text-lg mb-2">Visible Sample Test Cases:</h3>
-      {visibleTestCases.length === 0 ? (
-        <p className="text-sm text-gray-600 mb-4">No visible test cases to show.</p>
-      ) : visibleTestCases.map((tc, index) => (
-        <div key={index} className="mb-4 border rounded p-3 bg-gray-50">
-          <label className="block mb-1 font-semibold">Test Case #{index + 1} Input:</label>
-          <textarea
-            rows="2"
-            readOnly
-            className="w-full border p-2 rounded font-mono text-sm mb-2 bg-gray-100 cursor-not-allowed"
-            value={tc.input}
-          />
-          <label className="block mb-1 font-semibold">Expected Output:</label>
-          <textarea
-            rows="2"
-            readOnly
-            className="w-full border p-2 rounded font-mono text-sm bg-gray-100 cursor-not-allowed"
-            value={tc.expectedOutput}
-          />
-        </div>
-      ))}
+      {/* Buttons */}
+      <div className="flex gap-4 mt-4 flex-wrap">
+        <button
+          onClick={handleSubmit}
+          disabled={loading}
+          className={`flex items-center gap-2 px-4 py-2 rounded-md text-white bg-gradient-to-r from-blue-700 to-blue-500 hover:from-blue-800 hover:to-blue-600 transition ${loading && "opacity-50 cursor-not-allowed"}`}
+        >
+          <FaPlay /> {loading ? "Running..." : "Run Code"}
+        </button>
+        <button
+          onClick={handleFinalSubmit}
+          disabled={loading}
+          className={`flex items-center gap-2 px-4 py-2 rounded-md text-white bg-gradient-to-r from-purple-700 to-purple-500 hover:from-purple-800 hover:to-purple-600 transition ${loading && "opacity-50 cursor-not-allowed"}`}
+        >
+          📤 Submit
+        </button>
+       
 
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        className={`flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition ${loading && "opacity-50 cursor-not-allowed"}`}
-      >
-        <FaPlay /> {loading ? "Running..." : "Run Code"}
-      </button>
-      <button
-  onClick={handleFinalSubmit}
-  disabled={loading}
-  className={`mt-3 flex items-center justify-center gap-2 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition ${loading && "opacity-50 cursor-not-allowed"}`}
->
-  📤 Submit
-</button>
-
-
+      </div>
+      
+      {/* Verdict */}
       {verdict && (
-        <div className="mt-6">
-          <h4 className="font-bold flex items-center gap-2">
+        <div className="mt-6 p-4 rounded-md shadow-sm bg-gray-800">
+          <h4 className="font-bold flex items-center gap-2 text-gray-200">
             <FaClipboardCheck /> Verdict:
           </h4>
-          <p className={`font-semibold flex items-center gap-2 mt-1 ${
-            verdict === "Accepted" ? "text-green-600" :
-            verdict === "Wrong Answer" ? "text-red-500" :
-            "text-yellow-500"
+          <p className={`mt-1 font-semibold flex items-center gap-2 ${
+            verdict === "Accepted" ? "text-green-400" :
+            verdict === "Wrong Answer" ? "text-red-400" :
+            "text-yellow-400"
           }`}>
             {verdict === "Accepted" && <FaCheckCircle />}
             {verdict === "Wrong Answer" && <FaTimesCircle />}
@@ -197,13 +184,12 @@ const handleFinalSubmit = async () => {
         </div>
       )}
 
-      <div className="mt-6">
-        <h4 className="font-bold flex items-center gap-2">
+      {/* Output */}
+      <div className="mt-6 p-4 bg-gray-900 border rounded-md shadow-inner">
+        <h4 className="font-bold flex items-center gap-2 text-gray-200">
           <FaFileAlt /> Output:
         </h4>
-        <pre className="bg-gray-100 border p-4 rounded whitespace-pre-wrap text-sm font-mono text-gray-700 mt-2">
-          {output}
-        </pre>
+        <pre className="whitespace-pre-wrap font-mono text-sm mt-2 text-gray-100">{output}</pre>
       </div>
     </div>
   );

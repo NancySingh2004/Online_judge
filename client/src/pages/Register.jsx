@@ -1,49 +1,149 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
-export default function Register() {
-  const navigate = useNavigate();
-  const [form, setForm] = useState({
-    full_name: "",
-    user_id: "",
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { FaUser, FaEnvelope, FaLock, FaUserPlus } from "react-icons/fa";
+
+export default function RegisterPage() {
+  const [formData, setFormData] = useState({
+    name: "",
     email: "",
-    password: ""
+    password: "",
+    confirmPassword: "",
   });
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form)
-    });
-    if (res.ok) navigate("/login");
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleSubmit = async (e) => { // <-- add async here
+  e.preventDefault();
+
+  // Optional: check if passwords match
+  if (formData.password !== formData.confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      alert("Registration successful!");
+    } else {
+      alert(data.msg || "Registration failed!");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Server error!");
+  }
+};
+
+
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {["full_name", "user_id", "email", "password"].map((field) => (
+    <div className="min-h-screen bg-gradient-to-r from-indigo-600 to-blue-600 flex items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8"
+      >
+        {/* Header */}
+        <div className="text-center mb-8">
+          <FaUserPlus className="mx-auto text-4xl text-indigo-600 mb-2" />
+          <h1 className="text-3xl font-extrabold text-gray-900">
+            Create Account
+          </h1>
+          <p className="text-gray-500 mt-2">
+            Join Online Judge and start solving problems today 🚀
+          </p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Name */}
+          <div className="relative">
+            <FaUser className="absolute left-3 top-3 text-gray-400" />
             <input
-              key={field}
-              type={field === "password" ? "password" : "text"}
-              name={field}
-              placeholder={field.replace("_", " ").toUpperCase()}
-              className="w-full border px-4 py-2 rounded focus:outline-none focus:ring"
+              type="text"
+              name="name"
+              placeholder="Full Name"
+              value={formData.name}
               onChange={handleChange}
               required
+              className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none"
             />
-          ))}
-          <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-            Register
-          </button>
+          </div>
+
+          {/* Email */}
+          <div className="relative">
+            <FaEnvelope className="absolute left-3 top-3 text-gray-400" />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email Address"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none"
+            />
+          </div>
+
+          {/* Password */}
+          <div className="relative">
+            <FaLock className="absolute left-3 top-3 text-gray-400" />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none"
+            />
+          </div>
+
+          {/* Confirm Password */}
+          <div className="relative">
+            <FaLock className="absolute left-3 top-3 text-gray-400" />
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Confirm Password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+              className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none"
+            />
+          </div>
+
+          {/* Submit */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+            type="submit"
+            className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold shadow-lg hover:bg-indigo-700 transition"
+          >
+            Sign Up
+          </motion.button>
         </form>
-      </div>
+
+        {/* Footer */}
+        <p className="text-center text-gray-600 mt-6">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-indigo-600 font-semibold hover:underline"
+          >
+            Login
+          </Link>
+        </p>
+      </motion.div>
     </div>
   );
 }

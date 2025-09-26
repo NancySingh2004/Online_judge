@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { marked } from 'marked';
+import { FaMicrophone } from 'react-icons/fa';
+
 
 const CodeReviewChatbot = () => {
   const [messages, setMessages] = useState([]);
@@ -70,16 +72,41 @@ const CodeReviewChatbot = () => {
   }, [messages, isTyping]);
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white shadow-xl rounded-lg border border-gray-200">
-      <h2 className="text-2xl font-bold text-gray-800 text-center mb-4">
-        🧠 Code Review Assistant
-      </h2>
+    <div className="max-w-2xl mx-auto mt-6 p-4 bg-white shadow-lg rounded-lg border border-gray-200">
+      
+      {/* Input area */}
+      <div className="flex items-center gap-2 mt-3">   
+        <button
+          onClick={sendMessage}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm"
+        >
+          AI Review
+        </button>
 
-      <div className="h-[500px] overflow-y-auto bg-gray-50 border border-gray-200 rounded-md p-4 space-y-4">
+        <input
+          type="text"
+          value={input}
+          placeholder="Ask for review, suggestions, or fixes..."
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && sendMessage()}
+          className="flex-grow px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-black"
+        />
+
+        <button
+          onClick={startListening}
+          title="Voice Input 🎤"
+          className="bg-gray-100 hover:bg-gray-200 text-lg px-2 py-1.5 rounded-md"
+        >
+            <FaMicrophone />
+        </button>
+      </div>
+
+      {/* Chat messages */}
+      <div className="h-[400px] overflow-y-auto bg-gray-50 border border-gray-200 rounded-md p-3 space-y-3 mt-3">
         {messages.map((msg, idx) => (
           <div
             key={idx}
-            className={`max-w-[85%] px-4 py-2 rounded-lg text-sm whitespace-pre-wrap leading-relaxed ${
+            className={`max-w-[80%] px-3 py-2 rounded-md text-sm whitespace-pre-wrap leading-relaxed ${
               msg.sender === 'You'
                 ? 'ml-auto bg-blue-100 text-blue-900'
                 : 'mr-auto bg-gray-200 text-gray-800'
@@ -94,35 +121,11 @@ const CodeReviewChatbot = () => {
         ))}
 
         {isTyping && (
-          <div className="max-w-[85%] mr-auto bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-sm italic">
+          <div className="max-w-[80%] mr-auto bg-gray-200 text-gray-600 px-3 py-1.5 rounded-md text-sm italic">
             <strong>CodeReviewer 🤖:</strong> <span className="animate-pulse">Typing...</span>
           </div>
         )}
         <div ref={chatEndRef} />
-      </div>
-
-      <div className="flex items-center gap-3 mt-4">
-        <input
-          type="text"
-          value={input}
-          placeholder="Ask for review, suggestions, or fixes..."
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && sendMessage()}
-          className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-        />
-        <button
-          onClick={sendMessage}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm"
-        >
-          Send
-        </button>
-        <button
-          onClick={startListening}
-          title="Voice Input 🎤"
-          className="bg-gray-100 hover:bg-gray-200 text-lg px-3 py-2 rounded-lg"
-        >
-          🎤
-        </button>
       </div>
     </div>
   );

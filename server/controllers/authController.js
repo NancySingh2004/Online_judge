@@ -1,74 +1,47 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-// The register function to handle new user registration
-exports.register = async (req, res) => {
-  // Use a try...catch block for robust error handling
+// Register user
+const registerUser = async (req, res) => {
   try {
-    // 1. Destructure the required fields from the request body
-    const { full_name, user_id, email, password } = req.body;
+    const { name, email, password, confirmPassword } = req.body;
+    if (!name || !email || !password || !confirmPassword)
+      return res.status(400).json({ message: "All fields are required" });
+    if (password !== confirmPassword)
+      return res.status(400).json({ message: "Passwords do not match" });
 
-    // 2. Perform basic validation to ensure all fields are provided
-    if (!full_name || !user_id || !email || !password) {
-      return res.status(400).json({ message: "Please provide all required fields." });
-    }
-
-    // 3. Check if a user with the given email already exists
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(409).json({ message: "A user with this email already exists." });
-    }
+    if (existingUser)
+      return res.status(400).json({ message: "Email already registered" });
 
-    // 4. Hash the password before saving it to the database
-    // We use a salt round of 10, which is a good balance between security and performance.
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 5. Create a new User instance with the hashed password
-    const newUser = new User({
-      full_name,
-      user_id,
-      email,
-      password: hashedPassword,
-    });
-
-    // 6. Save the new user to the database
-    await newUser.save();
-
-    // 7. Send a successful response
+    const newUser = await User.create({ name, email, password: hashedPassword });
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.status(201).json({
-      message: "User registered successfully!",
-      user: {
-        id: newUser._id,
-        full_name: newUser.full_name,
-        email: newUser.email,
-        user_id: newUser.user_id,
-      },
+      message: "User registered successfully",
+      user: { id: newUser._id, name: newUser.name, email: newUser.email },
+      token,
     });
   } catch (error) {
-    // Log the error for debugging and send a generic server error message
-    console.error("Error during user registration:", error);
-    res.status(500).json({ message: "Server error. Please try again later." });
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-exports.login = async (req, res) => {
+// Login user
+const login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user)
-      return res.status(400).json({ message: "Invalid email or password" });
+    if (!user) return res.status(400).json({ message: "Invalid email or password" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(400).json({ message: "Invalid email or password" });
+    if (!isMatch) return res.status(400).json({ message: "Invalid email or password" });
 
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET || "secret",
-      { expiresIn: "1d" }
-    );
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || "secret", { expiresIn: "1d" });
 
     res.json({ token });
   } catch (err) {
@@ -76,7 +49,8 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.getProfile = async (req, res) => {
+// Get profile
+const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -84,4 +58,11 @@ exports.getProfile = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
+};
+
+// Export all together
+module.exports = {
+  registerUser,
+  login,
+  getProfile,
 };
