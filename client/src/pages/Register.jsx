@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaUser, FaEnvelope, FaLock, FaUserPlus } from "react-icons/fa";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -25,7 +27,7 @@ export default function RegisterPage() {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/api/auth/register", {
+    const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
