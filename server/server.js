@@ -24,7 +24,9 @@ app.use(cors());
 app.use(express.json());
 
 
-
+app.get("/", (req, res) => {
+  res.send("Backend is live 🚀");
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/problems', problemRoutes);
@@ -34,6 +36,7 @@ app.use('/api', homeRoute);
 app.use('/api/submissions', submissionRoutes);
 const aiReviewRoutes = require("./routes/aiReviewRoutes");
 app.use("/api/gemini", aiReviewRoutes);
+
 
 
 
