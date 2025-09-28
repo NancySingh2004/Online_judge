@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaEnvelope, FaLock, FaSignInAlt } from "react-icons/fa";
+
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
@@ -27,9 +28,7 @@ export default function LoginPage() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
@@ -38,7 +37,7 @@ export default function LoginPage() {
         setError(data.message || "Login failed");
       } else {
         localStorage.setItem("token", data.token);
-        navigate("/dashboard"); // login ke baad kahaan le jaana hai
+        navigate("/dashboard");
       }
     } catch (err) {
       setError("Server error, try again later");
@@ -48,18 +47,33 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4 relative overflow-hidden">
+
+      {/* Background Grid */}
+      <div className="absolute inset-0 grid grid-cols-12 grid-rows-12 gap-0 z-0">
+        {Array.from({ length: 12 * 12 }).map((_, i) => (
+          <div key={i} className="border border-gray-700 opacity-20 animate-pulse"></div>
+        ))}
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8"
+        className="relative z-10 bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md p-10"
       >
         {/* Header */}
         <div className="text-center mb-8">
-          <FaSignInAlt className="mx-auto text-4xl text-indigo-600 mb-2" />
-          <h1 className="text-3xl font-extrabold text-gray-900">Login</h1>
-          <p className="text-gray-500 mt-2">
+          <FaSignInAlt className="mx-auto text-5xl text-yellow-400 mb-2 hover:animate-pulse" />
+          <motion.h1
+            className="text-3xl font-extrabold text-white mb-2 
+                       bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 
+                       bg-clip-text text-transparent"
+            whileHover={{ scale: 1.05 }}
+          >
+            Login
+          </motion.h1>
+          <p className="text-gray-300 mt-2">
             Access your Online Judge account 🚀
           </p>
         </div>
@@ -73,53 +87,41 @@ export default function LoginPage() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email */}
-          <div className="relative">
-            <FaEnvelope className="absolute left-3 top-3 text-gray-400" />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none"
-            />
-          </div>
+          {[
+            { name: "email", type: "email", placeholder: "Email Address", icon: <FaEnvelope /> },
+            { name: "password", type: "password", placeholder: "Password", icon: <FaLock /> },
+          ].map((field, i) => (
+            <div key={i} className="relative">
+              <div className="absolute left-3 top-3 text-gray-400">{field.icon}</div>
+              <input
+                type={field.type}
+                name={field.name}
+                placeholder={field.placeholder}
+                value={formData[field.name]}
+                onChange={handleChange}
+                required
+                className="w-full pl-10 pr-3 py-3 rounded-xl border border-gray-600 bg-gray-900 text-gray-200
+                           focus:ring-2 focus:ring-yellow-400 outline-none transition duration-300 hover:border-yellow-400"
+              />
+            </div>
+          ))}
 
-          {/* Password */}
-          <div className="relative">
-            <FaLock className="absolute left-3 top-3 text-gray-400" />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full pl-10 pr-3 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none"
-            />
-          </div>
-
-          {/* Submit */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.97 }}
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold shadow-lg hover:bg-indigo-700 transition"
+            className="w-full bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 
+                       text-gray-900 py-3 rounded-xl font-semibold shadow-lg hover:opacity-90 transition"
           >
             {loading ? "Logging in..." : "Login"}
           </motion.button>
         </form>
 
         {/* Footer */}
-        <p className="text-center text-gray-600 mt-6">
+        <p className="text-center text-gray-400 mt-6">
           Don’t have an account?{" "}
-          <Link
-            to="/register"
-            className="text-indigo-600 font-semibold hover:underline"
-          >
+          <Link to="/register" className="text-yellow-400 font-semibold hover:underline">
             Sign Up
           </Link>
         </p>

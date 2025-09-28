@@ -2,28 +2,26 @@ import React, { useState, useRef, useEffect } from 'react';
 import { marked } from 'marked';
 import { FaMicrophone } from 'react-icons/fa';
 
-
-const CodeReviewChatbot = () => {
+const CodeReviewChatbot = ({ code }) => {  // lowercase 'code' to match parent
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    const messageToSend = code || "";  // fallback to empty string
+    if (!messageToSend.trim()) return; // prevent errors
 
-    const userMessage = { sender: 'You', text: input };
+    const userMessage = { sender: 'You', text: messageToSend };
     setMessages(prev => [...prev, userMessage]);
-    setInput('');
     setIsTyping(true);
 
     try {
       const res = await fetch(`${API_BASE_URL}/api/gemini/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input })
+        body: JSON.stringify({ message: messageToSend })
       });
 
       const data = await res.json();
@@ -40,31 +38,6 @@ const CodeReviewChatbot = () => {
     setIsTyping(false);
   };
 
-  const startListening = () => {
-    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      alert("❗ Your browser doesn't support Speech Recognition.");
-      return;
-    }
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.start();
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      setInput(prev => (prev ? prev + ' ' + transcript : transcript));
-    };
-
-    recognition.onerror = (event) => {
-      alert(`Voice input error: ${event.error}`);
-    };
-  };
-
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -73,8 +46,7 @@ const CodeReviewChatbot = () => {
 
   return (
     <div className="max-w-2xl mx-auto mt-6 p-4 bg-white shadow-lg rounded-lg border border-gray-200">
-      
-      {/* Input area */}
+
       <div className="flex items-center gap-2 mt-3">   
         <button
           onClick={sendMessage}
@@ -82,26 +54,8 @@ const CodeReviewChatbot = () => {
         >
           AI Review
         </button>
-
-        <input
-          type="text"
-          value={input}
-          placeholder="Ask for review, suggestions, or fixes..."
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && sendMessage()}
-          className="flex-grow px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm text-black"
-        />
-
-        <button
-          onClick={startListening}
-          title="Voice Input 🎤"
-          className="bg-gray-100 hover:bg-gray-200 text-lg px-2 py-1.5 rounded-md"
-        >
-            <FaMicrophone />
-        </button>
       </div>
 
-      {/* Chat messages */}
       <div className="h-[400px] overflow-y-auto bg-gray-50 border border-gray-200 rounded-md p-3 space-y-3 mt-3">
         {messages.map((msg, idx) => (
           <div

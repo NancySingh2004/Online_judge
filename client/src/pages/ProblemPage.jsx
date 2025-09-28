@@ -11,6 +11,8 @@ const ProblemPage = () => {
   const { id } = useParams();
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sourceCode, setSourceCode] = useState(""); // new state for code
+
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -92,11 +94,12 @@ const ProblemPage = () => {
       </div>
 
       {/* Code Editor */}
-      <CodeEditor problemId={problem._id} problemName={problem.title} />
+      <CodeEditor problemId={problem._id} problemName={problem.title}sourceCode={sourceCode}      
+  setSourceCode={setSourceCode} />
 
       {/* Code Review / Chatbot */}
       <div className="mt-6">
-        <CodeReview />
+        <CodeReview code={sourceCode}/>
       </div>
     </div>
   );

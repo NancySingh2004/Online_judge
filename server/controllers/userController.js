@@ -61,8 +61,10 @@ const updateProfile = async (req, res) => {
 };
 
 
+
+
 module.exports = {
   getProfile,
   getSubmissions,
-  updateProfile
+  updateProfile,
 };

@@ -1,0 +1,41 @@
+/* Animated gradient text */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.hover-animate-gradient:hover {
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+}
+
+/* Subtle professional grid animation */
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.25; }
+}
+
+.grid-animate > div {
+  animation: gridPulse 3s infinite ease-in-out;
+}
+
+/* Holi paint splash on icons */
+.icon-holi {
+  display: inline-block;
+  transition: color 0.3s ease;
+}
+
+/* Generate random vibrant colors when active */
+@keyframes holiColors {
+  0% { color: #FFD700; }
+  20% { color: #FF1493; }
+  40% { color: #00FFFF; }
+  60% { color: #FF4500; }
+  80% { color: #ADFF2F; }
+  100% { color: #FF69B4; }
+}
+
+.holi-active {
+  animation: holiColors 0.7s ease forwards;
+}

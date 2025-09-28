@@ -22,15 +22,15 @@ const languageTemplates = {
   ruby: `puts "Hello from Ruby"`
 };
 
-const CodeEditor = ({ problemId }) => {
+const CodeEditor = ({ problemId, problemName, sourceCode, setSourceCode }) => {
   const [language, setLanguage] = useState("python");
-  const [sourceCode, setSourceCode] = useState(languageTemplates["python"]);
+  //const [sourceCode, setSourceCode] = useState(languageTemplates["python"]);
   const [visibleTestCases, setVisibleTestCases] = useState([]);
   const [allTestCases, setAllTestCases] = useState([]);
   const [output, setOutput] = useState("");
   const [verdict, setVerdict] = useState("");
   const [loading, setLoading] = useState(false);
-  const [problemName, setProblemName] = useState("");
+  //const [problemName, setProblemName] = useState("");
 
   const navigate = useNavigate();
 
@@ -41,7 +41,7 @@ const CodeEditor = ({ problemId }) => {
         const all = res.data.testCases || [];
         setAllTestCases(all);
         setVisibleTestCases(all.filter(tc => !tc.hidden));
-        setProblemName(res.data.title);
+       // setProblemName(res.data.title);
       } catch (err) {
         console.error("Failed to fetch problem:", err);
       }
@@ -145,6 +145,29 @@ const CodeEditor = ({ problemId }) => {
         value={sourceCode}
         onChange={(e) => setSourceCode(e.target.value)}
       />
+     {/* Visible Test Cases */}
+{visibleTestCases.length > 0 && (
+  <div className="mt-6 p-4 bg-gray-800 rounded-md shadow-md">
+    <h4 className="font-bold flex items-center gap-2 text-gray-200">
+      <FaClipboardCheck /> Sample Test Cases
+    </h4>
+    <div className="mt-2 space-y-4">
+      {visibleTestCases.map((tc, i) => (
+        <div
+          key={i}
+          className="p-3 bg-gray-900 rounded-md border border-gray-700"
+        >
+          <p className="text-sm text-gray-300">
+            <span className="font-bold">Input:</span> {tc.input}
+          </p>
+          <p className="text-sm text-gray-300">
+            <span className="font-bold">Expected:</span> {tc.expectedOutput}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+)}   {/* ✅ properly closed here */}
 
       {/* Buttons */}
       <div className="flex gap-4 mt-4 flex-wrap">

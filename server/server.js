@@ -1,4 +1,6 @@
 const express = require('express');
+const http = require('http'); 
+const { Server } = require('socket.io'); 
 const dotenv = require("dotenv");
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -22,7 +24,20 @@ const app = express();
 connectDB();
 app.use(cors());
 app.use(express.json());
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+// Socket.IO connection
+io.on("connection", (socket) => {
+  console.log("✅ New client connected:", socket.id);
+});
 
+// Make io accessible in routes
+app.set("io", io);
 
 app.get("/", (req, res) => {
   res.send("Backend is live 🚀");
@@ -41,4 +56,4 @@ app.use("/api/gemini", aiReviewRoutes);
 
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
