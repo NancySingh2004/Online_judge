@@ -1,0 +1,103 @@
+/* Dashboard.css */
+
+/* Main container */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+  background-color: #1f2937; /* bg-gray-900 */
+  overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 16rem; /* 64 */
+  background-color: #1f2937; /* bg-gray-800 */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  z-index: 10;
+  transition: transform 0.3s ease;
+  transform: translateX(0); /* desktop: always visible */
+}
+
+/* Sidebar hidden for mobile by default */
+@media (max-width: 1024px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    transform: translateX(-100%);
+  }
+  .sidebar.active {
+    transform: translateX(0);
+  }
+  .mobile-toggle {
+    display: block;
+  }
+}
+
+/* Mobile toggle button hidden on desktop */
+.mobile-toggle {
+  display: none; /* hidden by default on desktop */
+  position: fixed;
+  top: 1rem;      /* distance from top */
+  left: 1rem;     /* distance from left */
+  z-index: 50;    /* above sidebar and content */
+  background-color: #facc15; /* yellow */
+  color: #1f2937;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  padding: 2.5rem; /* p-10 */
+  color: #e5e7eb; /* text-gray-200 */
+  overflow-y: auto;
+  z-index: 10;
+}
+
+/* Background grid */
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  gap: 0;
+  z-index: 0;
+}
+
+/* Hide background grid on small screens */
+@media (max-width: 640px) {
+  .bg-grid {
+    display: none;
+  }
+  .main-content {
+    padding: 1rem;
+  }
+}
+
+/* Dashboard stats grid responsive */
+.stats-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
