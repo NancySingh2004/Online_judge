@@ -19,6 +19,8 @@ import ProfilePage from './pages/ProfilePage';
 
 
 
+
+
 export default function App() {
     const [selectedProblem, setSelectedProblem] = useState(null); 
   return (
@@ -29,6 +31,7 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/edit/:id" element={<EditProblem />} />
+      
      
    {/*<Route path="/problems/:id" element={<ProblemDetails />} />*/}
       <Route path="/solve/:id" element={<CodeEditor problem={selectedProblem} />} />

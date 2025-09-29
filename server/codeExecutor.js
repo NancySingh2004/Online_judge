@@ -13,6 +13,8 @@ const executeCode = (language, code, input = "") => {
     let fileExtension, compileCmd = "", runCmd = "", outputFile = "";
     let fileName, className;
 
+    const isWindows = process.platform === "win32";
+
     switch (language) {
       case "python":
         fileExtension = "py";
@@ -20,30 +22,29 @@ const executeCode = (language, code, input = "") => {
         runCmd = `python3 ${fileName} < ${jobId}.txt`;
         break;
 
-      
+      case "cpp":
+        fileExtension = "cpp";
+        fileName = `${jobId}.cpp`;
+        outputFile = isWindows ? `${jobId}.exe` : `${jobId}`;
+        compileCmd = `g++ "${fileName}" -o "${outputFile}"`;
+        runCmd = isWindows
+          ? `"${outputFile}" < "${jobId}.txt"`
+          : `./${outputFile} < "${jobId}.txt"`;
+        break;
 
-     case "cpp":
-  fileExtension = "cpp";
-  fileName = `${jobId}.cpp`;
-  compileCmd = `g++ "${fileName}" -o "${jobId}.exe"`;
-  runCmd = `"${jobId}.exe" < "${jobId}.txt"`;
-  outputFile = `${jobId}.exe`;
-  break;
-
-   case "c":
-  fileExtension = "c";
-  fileName = `${jobId}.c`;
-  compileCmd = `gcc "${fileName}" -o "${jobId}.exe"`;
-  // Windows safe: input file ko `type` karke exe ko feed karo
-  runCmd = `type "${jobId}.txt" | "${jobId}.exe"`;
-  outputFile = `${jobId}.exe`;
-  break;
-
-
+      case "c":
+        fileExtension = "c";
+        fileName = `${jobId}.c`;
+        outputFile = isWindows ? `${jobId}.exe` : `${jobId}`;
+        compileCmd = `gcc "${fileName}" -o "${outputFile}"`;
+        runCmd = isWindows
+          ? `type "${jobId}.txt" | "${outputFile}"`
+          : `./${outputFile} < "${jobId}.txt"`;
+        break;
 
       case "java":
         fileExtension = "java";
-        className = `Main${jobId.replace(/-/g, "")}`; // Unique class name
+        className = `Main${jobId.replace(/-/g, "")}`;
         fileName = `${className}.java`;
         code = code.replace(/public\s+class\s+\w+/, `public class ${className}`);
         compileCmd = `javac ${fileName}`;

@@ -17,6 +17,18 @@ const userSchema = new mongoose.Schema(
       required: [true, "Please enter a password"],
       minlength: 6,
     },
+    github: { type: String, default: "" },
+    linkedin: { type: String, default: "" },
+    bio: { type: String, default: "" },
+    role: { type: String, default: "user" },
+   
+    // ✅ New field for attendance/streak tracking
+    attendance: [
+      {
+        date: { type: String },  // store as 'YYYY-MM-DD'
+        attended: { type: Boolean, default: true },
+      },
+    ],
   },
   { timestamps: true }
 );

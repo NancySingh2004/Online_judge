@@ -1,30 +1,30 @@
 const User = require("../models/User");
 const Submission = require("../models/Submission");
+const moment = require("moment");
 
+// ---------------- Get Profile ----------------
 const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Destructure only the fields you want to send to the frontend
-    const { _id, full_name, user_id, email, role, createdAt } = user;
-
-    res.status(200).json({
-      _id,
-      full_name,
-      user_id,
-      email,
-      role,
-      createdAt,
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      github: user.github || "",
+      linkedin: user.linkedin || "",
+      bio: user.bio || "",
+      role: user.role || "user",
+      createdAt: user.createdAt,
+      attendance: user.attendance || [],
     });
   } catch (err) {
-    console.error("Error in getProfile:", err.message);
-    res.status(500).json({ message: "Server error", error: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
+
 const getSubmissions = async (req, res) => {
   try {
     const submissions = await Submission.find({ userId: req.user.id }).sort({ timestamp: -1 });
@@ -35,30 +35,58 @@ const getSubmissions = async (req, res) => {
   }
 };
 
+// ---------------- Update Profile ----------------
 const updateProfile = async (req, res) => {
   try {
-    const { full_name, email } = req.body;
-
-    if (!full_name || !email) {
-      return res.status(400).json({ message: "Full name and email are required" });
-    }
+    const { name, email, github, linkedin, bio } = req.body;
+    if (!name || !email) return res.status(400).json({ message: "Name and email are required" });
 
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    user.full_name = full_name;
+    user.name = name;
     user.email = email;
+    user.github = github || "";
+    user.linkedin = linkedin || "";
+    user.bio = bio || "";
+
     await user.save();
 
-    // Send updated profile (excluding password)
-    const { _id, user_id, role, createdAt } = user;
-    res.json({ _id, full_name, email, user_id, role, createdAt });
-
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      github: user.github,
+      linkedin: user.linkedin,
+      bio: user.bio,
+      role: user.role,
+    });
   } catch (err) {
-    console.error("Update Profile Error:", err.message);
+    console.error(err);
     res.status(500).json({ message: "Profile update failed", error: err.message });
   }
 };
+// ---------------- Mark Attendance ----------------
+const markAttendance = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const today = moment().format("YYYY-MM-DD");
+    const alreadyMarked = user.attendance.some(a => a.date === today);
+
+    if (alreadyMarked) return res.status(400).json({ message: "Attendance already marked for today" });
+
+    user.attendance.push({ date: today, attended: true });
+    await user.save();
+
+    res.json({ message: "Attendance marked successfully", attendance: user.attendance });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to mark attendance" });
+  }
+};
+
 
 
 
@@ -67,4 +95,5 @@ module.exports = {
   getProfile,
   getSubmissions,
   updateProfile,
+  markAttendance,
 };
