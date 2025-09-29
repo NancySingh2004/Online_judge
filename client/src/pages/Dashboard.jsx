@@ -260,116 +260,219 @@ export default function Dashboard() {
               </motion.div>
             </div>
 
-            {/* Weekly Attendance / Streak Tracker */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="bg-gray-800 rounded-2xl shadow-lg p-6 mb-10"
-            >
-              <h3 className="text-xl font-semibold mb-4 text-yellow-400">
-                Weekly Attendance
-              </h3>
-
-              <div className="flex justify-between gap-3 mb-4">
-                {progressData.map((d) => (
-                  <div key={d.day} className="flex flex-col items-center">
-                    <button
-                      onClick={() => markDay(d.day)}
-                      className={`w-14 h-14 rounded-full text-white font-bold transition
-                        ${
-                          d.solved
-                            ? "bg-yellow-400"
-                            : "bg-gray-600"
-                        } hover:scale-105 hover:bg-yellow-500`}
-                    >
-                      {d.day.slice(0, 3)}
-                    </button>
-                    <span className="mt-1 text-gray-300 text-sm">
-                      {d.solved ? "✔" : ""}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-             {/* Mini Line Streak Graph */}
-            <div className="bg-gray-800 rounded-2xl shadow-lg p-4 w-full max-w-sm mt-6">
-  <h4 className="text-gray-400 text-sm mb-3 font-semibold">Weekly Streak Wave</h4>
-
-  <svg width="100%" height="80">
-    {/* Wave Line */}
-    <motion.path
-      fill="none"
-      stroke="#FACC15"
-      strokeWidth="2"
-      initial={{ pathLength: 0 }}
-      animate={{ pathLength: 1 }}
-      transition={{ duration: 1.2, ease: "easeInOut" }}
-      d={progressData
-        .map((d, i) => {
-          const x = (i * 100) / (progressData.length - 1);
-          const baseY = 40;
-          const amplitude = d.solved ? 15 : 5; // solved day wave higher
-          const y = baseY - amplitude * Math.sin((i / (progressData.length - 1)) * Math.PI);
-          return `${x},${y}`;
-        })
-        .reduce((acc, point, idx) => {
-          if (idx === 0) return `M${point}`;
-          return `${acc} L${point}`;
-        }, "")}
-    />
-
-    {/* Points */}
-    {progressData.map((d, i) => {
-      const x = (i * 100) / (progressData.length - 1) + "%";
-      const baseY = 40;
-      const amplitude = d.solved ? 15 : 5;
-      const y = baseY - amplitude * Math.sin((i / (progressData.length - 1)) * Math.PI);
-      return (
-        <motion.circle
-          key={i}
-          cx={x}
-          cy={y}
-          r="4"
-          fill={d.solved ? "#FACC15" : "#4B5563"}
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.5 + i * 0.1 }}
-        />
-      );
-    })}
-  </svg>
-
-  {/* Weekday Labels */}
-  <div className="flex justify-between mt-2 text-gray-300 text-xs">
+         <motion.div
+  whileHover={{ scale: 1.02 }}
+  className="bg-gray-800 rounded-2xl shadow-lg p-6 mb-10"
+>
+  <h3 className="text-xl font-semibold mb-6 text-yellow-400">
+    Weekly Attendance
+  </h3>
+{/* Attendance Buttons */}
+  <div className="flex justify-between gap-3 md:gap-4 mb-6 px-1">
     {progressData.map((d) => (
-      <span key={d.day}>{d.day.slice(0, 3)}</span>
+      <div key={d.day} className="flex flex-col items-center w-full">
+        <button
+          onClick={() => markDay(d.day)}
+          className={`w-full md:w-20 py-2 md:py-3 rounded-2xl font-semibold transition-all duration-300 flex items-center justify-center
+            ${
+              d.solved
+                ? "bg-gradient-to-r from-yellow-400 to-yellow-300 text-gray-900 shadow-lg hover:scale-105 hover:brightness-110"
+                : "bg-gray-700 text-gray-200 hover:bg-gray-600 hover:scale-105"
+            }`}
+        >
+          {d.day.slice(0, 3)}
+        </button>
+        <span className="mt-2 text-gray-300 text-sm">
+          {d.solved ? "✔" : ""}
+        </span>
+      </div>
     ))}
   </div>
+{/* Mini Streak Graph with Floating Animation */}
+<div className="w-full mt-6 bg-gradient-to-br from-gray-800/90 to-gray-900/90 rounded-2xl p-6 shadow-xl border border-gray-700 backdrop-blur-md">
+  <h3 className="text-gray-300 text-sm font-semibold mb-3 tracking-wide">
+    Weekly Progress
+  </h3>
+  <svg width="100%" height="200" viewBox="0 0 100 200" preserveAspectRatio="none">
+    {/* Square Grid Background */}
+    <defs>
+      <pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
+        <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#374151" strokeWidth="0.4" />
+      </pattern>
+      <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+        <rect width="50" height="50" fill="url(#smallGrid)" />
+        <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#4B5563" strokeWidth="0.7" />
+      </pattern>
 
-  <p className="text-gray-200 text-sm mt-2">
-    Current streak: <span className="text-yellow-400 font-semibold">{computeStreak()}🔥</span>
-  </p>
+      {/* Line + Area Gradient */}
+      <linearGradient id="waveGradient" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stopColor="#FACC15" />
+        <stop offset="100%" stopColor="#FB923C" />
+      </linearGradient>
+      <linearGradient id="fillGradient" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="rgba(250,204,21,0.4)" />
+        <stop offset="100%" stopColor="rgba(250,204,21,0)" />
+      </linearGradient>
+    </defs>
+
+    {/* Background Grid */}
+    <rect width="100%" height="200" fill="url(#grid)" />
+
+    {/* Floating Wave Line */}
+    <motion.g
+      animate={{ y: [0, -5, 0, 5, 0] }}
+      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+    >
+      <motion.path
+        fill="url(#fillGradient)"
+        stroke="url(#waveGradient)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1.8, ease: "easeInOut" }}
+        d={(() => {
+          const amplitude = 35;
+          const baseline = 100;
+          let path = `M0,${baseline}`;
+          progressData.forEach((d, i) => {
+            const x = (i * 100) / (progressData.length - 1);
+            const y =
+              baseline -
+              amplitude *
+                Math.sin((i / progressData.length) * Math.PI * 2) *
+                (d.solved ? 1 : 0.4);
+            path += ` L${x},${y}`;
+          });
+          path += " L100,200 L0,200 Z";
+          return path;
+        })()}
+      />
+
+      {/* Points */}
+      {progressData.map((d, i) => {
+        const amplitude = 35;
+        const baseline = 100;
+        const x = (i * 100) / (progressData.length - 1);
+        const y =
+          baseline -
+          amplitude *
+            Math.sin((i / progressData.length) * Math.PI * 2) *
+            (d.solved ? 1 : 0.4);
+        return (
+          <motion.circle
+            key={i}
+            cx={x}
+            cy={y}
+            r="4"
+            fill={d.solved ? "#FACC15" : "#6B7280"}
+            className={d.solved ? "drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" : ""}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.6 + i * 0.15 }}
+          >
+            <title>
+              {d.day}: {d.solved ? "Solved ✅" : "Not Solved ❌"}
+            </title>
+          </motion.circle>
+        );
+      })}
+    </motion.g>
+  </svg>
+
+  {/* Streak Info */}
+  <div className="mt-5 flex items-center justify-between">
+    <p className="text-gray-300 text-sm">Current Streak</p>
+    <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500/20 px-3 py-1 text-sm font-semibold text-yellow-400 shadow-inner">
+      {computeStreak()} 🔥
+    </span>
+  </div>
 </div>
 
 
-            </motion.div>
+</motion.div>
 
-            {/* User Profile */}
+
             <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="bg-gray-800 rounded-2xl shadow-lg p-6"
-            >
-              <h3 className="text-xl font-semibold mb-4 text-yellow-400">
-                Profile Info
-              </h3>
-              <div className="grid sm:grid-cols-2 gap-4 text-gray-200">
-                <p>
-                  <strong>Name:</strong> {user?.name || "N/A"}
-                </p>
-                <p>
-                  <strong>Email:</strong> {user?.email}
-                </p>
-              </div>
-            </motion.div>
+    whileHover={{ scale: 1.01, boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.05)" }}
+    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+    
+    // Updated container to be flexible and align items
+    className="bg-gray-800 border border-gray-700 rounded-xl shadow-2xl p-6 md:p-8 flex items-center justify-between"
+  >
+    {/* HEADER SECTION: Avatar and Primary Info */}
+<div className="flex items-center space-x-6 pb-6 border-b border-gray-700/50 mb-6">
+  {/* Avatar (Initials or Image) */}
+  <div className="relative w-20 h-20 flex-shrink-0">
+    <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-purple-500 via-pink-500 to-indigo-500 animate-pulse opacity-30"></div>
+    <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-4xl font-extrabold text-white shadow-lg ring-2 ring-purple-400/40 hover:scale-105 transition-transform duration-300">
+      {user?.name ? user.name[0].toUpperCase() : <div className="w-8 h-8" />}
+    </div>
+  </div>
+
+  {/* Name and Role */}
+  <div>
+    <h3 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+      {user?.name || "User Profile"}
+    </h3>
+    <span className="inline-flex items-center px-3 py-1 mt-2 text-sm font-medium rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 shadow-sm">
+      {user?.role || "System Member"}
+    </span>
+  </div>
+</div>
+
+    {/* DETAILS GRID SECTION: Enhanced Visuals */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8 text-gray-300">
+      
+      {/* 1. Email Field */}
+<div className="group flex items-center gap-4 p-4 rounded-2xl bg-gray-900/70 backdrop-blur-md border border-gray-700 hover:border-indigo-500 transition-all duration-300 shadow-lg hover:shadow-indigo-500/20">
+  {/* Icon with gradient circle */}
+  <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white shadow-md group-hover:scale-110 transition-transform duration-300">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M16 12H8m0 0l4-4m-4 4l4 4m6-8a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  </div>
+
+  {/* Text content */}
+  <div className="flex flex-col">
+    <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+      Email
+    </span>
+    <p className="text-base md:text-lg font-bold text-white group-hover:text-indigo-400 transition-colors duration-300 break-words">
+      {user?.email || "N/A"}
+    </p>
+  </div>
+</div>
+
+      
+   
+
+      {/* 4. Status Indicator */}
+      <div className="flex items-start space-x-3">
+        <div className="w-5 h-5 text-gray-500 mt-1 flex-shrink-0" />
+        <div className="flex flex-col">
+          <strong className=" mb-2 text-sm uppercase tracking-wider text-gray-400 ">Status</strong>
+          <span className="inline-flex items-center rounded-full bg-green-500/20 px-3 py-0.5 text-sm font-semibold text-green-400">
+            Active
+          </span>
+        </div>
+      </div>
+    </div>
+   
+    
+    
+  </motion.div>
           </>
         )}
       </div>

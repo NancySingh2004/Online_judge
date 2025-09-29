@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEdit, FaTrash, FaCode } from "react-icons/fa";
+import { FaEdit, FaTrash, FaCode, FaSearch } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const ProblemList = ({ onSelectProblem }) => {
   const [problems, setProblems] = useState([]);
+  const [filteredProblems, setFilteredProblems] = useState([]);
+  const [search, setSearch] = useState("");
+  const [difficultyFilter, setDifficultyFilter] = useState("All");
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchProblems();
   }, []);
+   useEffect(() => {
+    filterProblems();
+  }, [search, difficultyFilter, problems]);
 
   const fetchProblems = async () => {
     try {
@@ -22,7 +28,26 @@ const ProblemList = ({ onSelectProblem }) => {
       console.error("Error fetching problems:", err);
     }
   };
+const filterProblems = () => {
+    let filtered = [...problems];
 
+    // Filter by difficulty
+    if (difficultyFilter !== "All") {
+      filtered = filtered.filter((p) => p.difficulty === difficultyFilter);
+    }
+
+    // Filter by search
+    if (search.trim() !== "") {
+      const query = search.toLowerCase();
+      filtered = filtered.filter(
+        (p) =>
+          p.title.toLowerCase().includes(query) ||
+          (p.description && p.description.toLowerCase().includes(query))
+      );
+    }
+
+    setFilteredProblems(filtered);
+  };
   const handleDelete = async (id) => {
     if (window.confirm("Delete this problem?")) {
       try {
@@ -58,15 +83,47 @@ const ProblemList = ({ onSelectProblem }) => {
           <h2 className="text-3xl font-bold text-yellow-400 flex items-center gap-2 mb-10">
             <FaCode /> All Problems
           </h2>
+          
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            {/* Search */}
+            <div className="relative w-full sm:w-1/2">
+              <input
+                type="text"
+                placeholder="Search problems..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-xl bg-gray-800 border border-gray-700 placeholder-gray-500 text-gray-200 focus:outline-none focus:border-yellow-400"
+              />
+              <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
+            </div>
 
-          {/* Grid Layout */}
-          {problems.length === 0 ? (
+            {/* Difficulty Filter */}
+            <div className="flex gap-3">
+              {["All", "Easy", "Medium", "Hard"].map((level) => (
+                <button
+                  key={level}
+                  onClick={() => setDifficultyFilter(level)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition
+                    ${
+                      difficultyFilter === level
+                        ? "bg-yellow-400 text-gray-900 shadow-lg"
+                        : "bg-gray-700 text-gray-200 hover:bg-gray-600"
+                    }`}
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
+          </div>
+           {/* Grid Layout */}
+          {filteredProblems.length === 0 ? (
             <div className="text-gray-400 text-center mt-10">
               No problems found.
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {problems.map((p) => (
+              {filteredProblems.map((p) => (
                 <motion.div
                   key={p._id}
                   whileHover={{ scale: 1.05 }}
@@ -90,7 +147,6 @@ const ProblemList = ({ onSelectProblem }) => {
                       {p.difficulty}
                     </span>
                   </div>
-
                   {/* Short Description */}
                   <p className="mt-3 text-sm text-gray-400 line-clamp-3">
                     {p.description || "No description available."}
