@@ -453,10 +453,13 @@ export default function Dashboard() {
     <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
       Email
     </span>
-    <p className="text-base md:text-sm font-bold text-white group-hover:text-indigo-400 transition-colors duration-300 break-words">
+    
+    <p className="text-base md:text-lg font-bold text-white group-hover:text-indigo-400 transition-colors duration-300 break-words truncate max-w-full">
       {user?.email || "N/A"}
     </p>
+      
   </div>
+  
 </div>
 
       

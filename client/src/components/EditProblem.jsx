@@ -66,11 +66,7 @@ const EditProblem = () => {
 
   return (
     <div className="min-h-screen flex bg-gray-900 text-gray-200">
-      {/* Optional Sidebar */}
-      <div className="w-64 bg-gray-800 p-6 shadow-md flex flex-col justify-between">
-        <h1 className="text-2xl font-bold text-yellow-400 mb-6">Dashboard</h1>
-        <p className="text-gray-400">Edit Problem</p>
-      </div>
+     
 
       {/* Main Content */}
       <div className="flex-1 p-10 overflow-y-auto">
