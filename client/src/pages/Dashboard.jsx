@@ -17,13 +17,13 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [progressData, setProgressData] = useState([
+    { day: "Sun", solved: false },
     { day: "Mon", solved: false },
     { day: "Tue", solved: false },
     { day: "Wed", solved: false },
     { day: "Thu", solved: false },
     { day: "Fri", solved: false },
     { day: "Sat", solved: false },
-    { day: "Sun", solved: false },
   ]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -42,7 +42,7 @@ export default function Dashboard() {
         const data = await res.json();
         setUser(data);
 
-        const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        const weekDays = [ "Sun","Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         const today = new Date();
         const dayIndex = today.getDay(); // 0 = Sunday
         const weeklyData = weekDays.map((day, i) => {
@@ -201,7 +201,7 @@ export default function Dashboard() {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-3xl font-semibold text-yellow-400"
               >
-                {getGreeting()}, {user?.full_name || "Coder"}!
+                {getGreeting()}, {user?.name || "Coder"}!
               </motion.h2>
               <p className="text-gray-400 text-sm">
                 Ready to code and compete 💻
