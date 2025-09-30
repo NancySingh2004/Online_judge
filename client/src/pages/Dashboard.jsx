@@ -199,7 +199,9 @@ export default function Dashboard() {
               <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-3xl font-semibold text-yellow-400"
+                className="relative z-20 text-3xl md:text-3xl font-extrabold mb-6 leading-tight 
+                     bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 
+                     bg-clip-text text-transparent hover-animate-gradient"
               >
                 {getGreeting()}, {user?.name || "Coder"}!
               </motion.h2>
@@ -264,7 +266,9 @@ export default function Dashboard() {
   whileHover={{ scale: 1.02 }}
   className="bg-gray-800 rounded-2xl shadow-lg p-6 mb-10"
 >
-  <h3 className="text-xl font-semibold mb-6 text-yellow-400">
+  <h3 className="relative z-20 text-2xl md:text-2xl font-extrabold mb-6 leading-tight 
+                     bg-gradient-to-r from-orange-400 via-pink-500 to-purple-500 
+                     bg-clip-text text-transparent hover-animate-gradient">
     Weekly Attendance
   </h3>
 {/* Attendance Buttons */}
@@ -449,7 +453,7 @@ export default function Dashboard() {
     <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
       Email
     </span>
-    <p className="text-base md:text-lg font-bold text-white group-hover:text-indigo-400 transition-colors duration-300 break-words">
+    <p className="text-base md:text-sm font-bold text-white group-hover:text-indigo-400 transition-colors duration-300 break-words">
       {user?.email || "N/A"}
     </p>
   </div>
