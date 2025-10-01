@@ -12,39 +12,41 @@ const ProblemList = ({ onSelectProblem }) => {
   const [search, setSearch] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("All");
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
+  // Token check & fetch problems
   useEffect(() => {
     const token = localStorage.getItem("token");
-   if (!token) {
-     navigate("/login");
-     return;
-   }
-  fetchProblems(token);
-  }, []);
-   useEffect(() => {
-    filterProblems();
-  }, [search, difficultyFilter, problems]);
-
-  const fetchProblems = async (token) => {
-    try {
-       const res = await axios.get(`${API_BASE_URL}/api/problems`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-      setProblems(res.data);
-    } catch (err) {
-      console.error("Error fetching problems:", err);
+    if (!token) {
       navigate("/login");
+      return;
     }
-  };
-const filterProblems = () => {
+
+    const fetchProblems = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/problems`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setProblems(res.data);
+      } catch (err) {
+        console.error("Error fetching problems:", err);
+        navigate("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProblems();
+  }, [navigate]);
+
+  // Filter problems whenever search, difficulty or problems change
+  useEffect(() => {
     let filtered = [...problems];
 
-    // Filter by difficulty
     if (difficultyFilter !== "All") {
       filtered = filtered.filter((p) => p.difficulty === difficultyFilter);
     }
 
-    // Filter by search
     if (search.trim() !== "") {
       const query = search.toLowerCase();
       filtered = filtered.filter(
@@ -55,12 +57,21 @@ const filterProblems = () => {
     }
 
     setFilteredProblems(filtered);
-  };
+  }, [search, difficultyFilter, problems]);
+
   const handleDelete = async (id) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
     if (window.confirm("Delete this problem?")) {
       try {
-        await axios.delete(`${API_BASE_URL}/api/problems/${id}`);
-        fetchProblems();
+        await axios.delete(`${API_BASE_URL}/api/problems/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setProblems((prev) => prev.filter((p) => p._id !== id));
       } catch (err) {
         console.error("Error deleting problem:", err);
       }
@@ -68,8 +79,16 @@ const filterProblems = () => {
   };
 
   const handleSelect = async (id) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/problems/${id}`);
+      const res = await axios.get(`${API_BASE_URL}/api/problems/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       if (onSelectProblem) onSelectProblem(res.data);
       navigate(`/problems/${id}`);
     } catch (err) {
@@ -77,11 +96,11 @@ const filterProblems = () => {
     }
   };
 
+  if (loading) return <div className="text-gray-400 p-10 text-center">Loading...</div>;
+
   return (
     <div className="min-h-screen bg-gray-900 text-gray-200">
-       
-
-      < div className="flex-1 p-10 overflow-y-auto">
+      <div className="flex-1 p-6 sm:p-10 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -91,7 +110,7 @@ const filterProblems = () => {
           <h2 className="text-3xl font-bold text-yellow-400 flex items-center gap-2 mb-10">
             <FaCode /> All Problems
           </h2>
-          
+
           {/* Filters */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             {/* Search */}
@@ -124,11 +143,10 @@ const filterProblems = () => {
               ))}
             </div>
           </div>
-           {/* Grid Layout */}
+
+          {/* Grid Layout */}
           {filteredProblems.length === 0 ? (
-            <div className="text-gray-400 text-center mt-10">
-              No problems found.
-            </div>
+            <div className="text-gray-400 text-center mt-10">No problems found.</div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {filteredProblems.map((p) => (
@@ -140,9 +158,7 @@ const filterProblems = () => {
                 >
                   {/* Title & Difficulty */}
                   <div className="flex justify-between items-center">
-                    <h3 className="text-lg font-semibold text-yellow-400 truncate">
-                      {p.title}
-                    </h3>
+                    <h3 className="text-lg font-semibold text-yellow-400 truncate">{p.title}</h3>
                     <span
                       className={`text-xs px-2 py-1 rounded-full font-medium ${
                         p.difficulty === "Easy"
@@ -155,6 +171,7 @@ const filterProblems = () => {
                       {p.difficulty}
                     </span>
                   </div>
+
                   {/* Short Description */}
                   <p className="mt-3 text-sm text-gray-400 line-clamp-3">
                     {p.description || "No description available."}
@@ -184,7 +201,6 @@ const filterProblems = () => {
             </div>
           )}
         </motion.div>
-    
       </div>
     </div>
   );
