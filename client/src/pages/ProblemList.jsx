@@ -14,18 +14,26 @@ const ProblemList = ({ onSelectProblem }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchProblems();
+    const token = localStorage.getItem("token");
+   if (!token) {
+     navigate("/login");
+     return;
+   }
+  fetchProblems(token);
   }, []);
    useEffect(() => {
     filterProblems();
   }, [search, difficultyFilter, problems]);
 
-  const fetchProblems = async () => {
+  const fetchProblems = async (token) => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/problems`);
+       const res = await axios.get(`${API_BASE_URL}/api/problems`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
       setProblems(res.data);
     } catch (err) {
       console.error("Error fetching problems:", err);
+      navigate("/login");
     }
   };
 const filterProblems = () => {
