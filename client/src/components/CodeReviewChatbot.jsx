@@ -35,7 +35,7 @@ const CodeReviewChatbot = ({ code }) => {
       ]);
     }
 
-    setIsTyping(false);
+    setIsTyping(false); 
   };
 
   useEffect(() => {
