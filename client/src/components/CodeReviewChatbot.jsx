@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { marked } from 'marked';
 import { FaMicrophone } from 'react-icons/fa';
 
-const CodeReviewChatbot = ({ code }) => {  // lowercase 'code' to match parent
+const CodeReviewChatbot = ({ code }) => {  
   const [messages, setMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef(null);
@@ -10,8 +10,8 @@ const CodeReviewChatbot = ({ code }) => {  // lowercase 'code' to match parent
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const sendMessage = async () => {
-    const messageToSend = code || "";  // fallback to empty string
-    if (!messageToSend.trim()) return; // prevent errors
+    const messageToSend = code || "";  
+    if (!messageToSend.trim()) return; 
 
     const userMessage = { sender: 'You', text: messageToSend };
     setMessages(prev => [...prev, userMessage]);
@@ -26,12 +26,12 @@ const CodeReviewChatbot = ({ code }) => {  // lowercase 'code' to match parent
 
       const data = await res.json();
       const htmlReply = marked.parse(data.reply);
-      const botMessage = { sender: 'CodeReviewer 🤖', text: htmlReply };
+      const botMessage = { sender: 'CodeReviewer ', text: htmlReply };
       setMessages(prev => [...prev, botMessage]);
     } catch (err) {
       setMessages(prev => [
         ...prev,
-        { sender: 'CodeReviewer 🤖', text: '❌ Sorry, something went wrong.' }
+        { sender: 'CodeReviewer ', text: ' Sorry, something went wrong.' }
       ]);
     }
 
@@ -76,7 +76,7 @@ const CodeReviewChatbot = ({ code }) => {  // lowercase 'code' to match parent
 
         {isTyping && (
           <div className="max-w-[80%] mr-auto bg-gray-200 text-gray-600 px-3 py-1.5 rounded-md text-sm italic">
-            <strong>CodeReviewer 🤖:</strong> <span className="animate-pulse">Typing...</span>
+            <strong>CodeReviewer :</strong> <span className="animate-pulse">Typing...</span>
           </div>
         )}
         <div ref={chatEndRef} />
