@@ -57,7 +57,7 @@ const CodeEditor = ({ problemId, problemName, sourceCode, setSourceCode }) => {
 
   const handleSubmit = async () => {
     setLoading(true);
-    setOutput("⏳ Running...");
+    setOutput(" Running...");
     setVerdict("");
 
     try {
@@ -75,7 +75,7 @@ const CodeEditor = ({ problemId, problemName, sourceCode, setSourceCode }) => {
       setVerdict(allAccepted ? "Accepted" : "Wrong Answer");
     } catch (err) {
       const msg = err.response?.data?.error || "Server error";
-      setOutput(`❌ ${msg}`);
+      setOutput(` ${msg}`);
       setVerdict("Runtime Error");
     } finally {
       setLoading(false);
@@ -106,7 +106,7 @@ const CodeEditor = ({ problemId, problemName, sourceCode, setSourceCode }) => {
 
       navigate(`/submissions/${problemId}`);
     } catch (err) {
-      console.error("❌ Submission error:", err.message);
+      console.error(" Submission error:", err.message);
       alert("Submission failed. Try again.");
     } finally {
       setLoading(false);
@@ -167,7 +167,7 @@ const CodeEditor = ({ problemId, problemName, sourceCode, setSourceCode }) => {
       ))}
     </div>
   </div>
-)}   {/* ✅ properly closed here */}
+)}   {/*  properly closed here */}
 
       {/* Buttons */}
       <div className="flex gap-4 mt-4 flex-wrap">
@@ -183,7 +183,7 @@ const CodeEditor = ({ problemId, problemName, sourceCode, setSourceCode }) => {
           disabled={loading}
           className={`flex items-center gap-2 px-4 py-2 rounded-md text-white bg-gradient-to-r from-purple-700 to-purple-500 hover:from-purple-800 hover:to-purple-600 transition ${loading && "opacity-50 cursor-not-allowed"}`}
         >
-          📤 Submit
+           Submit
         </button>
        
 
