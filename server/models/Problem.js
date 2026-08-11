@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const problemSchema = new mongoose.Schema({
-  title: { type: String, required: true, unique: true }, // 🔁 Was 'name' in /submit, now match it
+  title: { type: String, required: true, unique: true }, 
   description: { type: String, required: true },
   difficulty: { type: String, enum: ['Easy', 'Medium', 'Hard'], default: 'Easy' },
 
@@ -14,7 +14,7 @@ const problemSchema = new mongoose.Schema({
   testCases: [
     {
       input: { type: String, required: true },
-      expectedOutput: { type: String, required: true }, // 🔁 Rename from `output` to `expectedOutput` to match your codeRoutes logic
+      expectedOutput: { type: String, required: true }, 
       hidden: {
         type: Boolean,
         default: false
