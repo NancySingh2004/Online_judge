@@ -20,7 +20,7 @@ const ProblemPage = () => {
         const res = await axios.get(`${API_BASE_URL}/api/problems/${id}`);
         setProblem(res.data);
       } catch (error) {
-        console.error("❌ Error fetching problem:", error.message);
+        console.error(" Error fetching problem:", error.message);
       } finally {
         setLoading(false);
       }
