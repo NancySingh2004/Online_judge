@@ -8,13 +8,13 @@ router.post('/submit', async (req, res) => {
   const {
     language = 'python',
     sourceCode,
-    testCases = [], // ⬅️ Array of test cases
+    testCases = [], 
     problem_name = 'Untitled Problem',
     userId = null,
     save = false,
   } = req.body;
 
-  // ✅ Basic validation
+  
   if (!sourceCode || typeof sourceCode !== 'string') {
     return res.status(400).json({ error: 'Source code is required.' });
   }
@@ -39,7 +39,7 @@ router.post('/submit', async (req, res) => {
         verdict,
       });
 
-      // ✅ Save submission if needed
+      
       if (save) {
         await Submission.create({
           userId,
@@ -62,7 +62,7 @@ router.post('/submit', async (req, res) => {
         verdict: "Runtime Error",
       });
 
-      // ✅ Save runtime error
+      
       if (save) {
         await Submission.create({
           userId,
