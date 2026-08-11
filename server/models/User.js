@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
     bio: { type: String, default: "" },
     role: { type: String, default: "user" },
    
-    // ✅ New field for attendance/streak tracking
+    
     attendance: [
       {
         date: { type: String },  // store as 'YYYY-MM-DD'
