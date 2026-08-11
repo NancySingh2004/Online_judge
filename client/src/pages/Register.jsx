@@ -71,7 +71,7 @@ export default function RegisterPage() {
             Create Account
           </motion.h1>
           <p className="text-gray-300 mt-2">
-            Join Online Judge and start solving problems today 🚀
+            Join Online Judge and start solving problems today 
           </p>
         </div>
 
