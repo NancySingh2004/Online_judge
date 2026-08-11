@@ -74,7 +74,7 @@ export default function LoginPage() {
             Login
           </motion.h1>
           <p className="text-gray-300 mt-2">
-            Access your Online Judge account 🚀
+            Access your Online Judge account 
           </p>
         </div>
 
