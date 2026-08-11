@@ -21,7 +21,7 @@ const SubmissionPage = () => {
         const res = await axios.get(`${API_BASE_URL}/api/submissions/${problemId}`);
         setSubmissions(res.data);
       } catch (err) {
-        console.error("❌ Error fetching submissions", err);
+        console.error(" Error fetching submissions", err);
       } finally {
         setLoading(false);
       }
@@ -43,7 +43,7 @@ const SubmissionPage = () => {
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-blue-700 text-lg font-bold animate-pulse">⏳ Loading submissions...</p>
+        <p className="text-blue-700 text-lg font-bold animate-pulse"> Loading submissions...</p>
       </div>
     );
 
