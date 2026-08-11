@@ -33,14 +33,14 @@ const io = new Server(server, {
 });
 // Socket.IO connection
 io.on("connection", (socket) => {
-  console.log("✅ New client connected:", socket.id);
+  console.log(" New client connected:", socket.id);
 });
 
 // Make io accessible in routes
 app.set("io", io);
 
 app.get("/", (req, res) => {
-  res.send("Backend is live 🚀");
+  res.send("Backend is live ");
 });
 
 app.use('/api/auth', authRoutes);
@@ -57,4 +57,4 @@ app.use("/api/gemini", aiReviewRoutes);
 
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(` Server running on port ${PORT}`));
