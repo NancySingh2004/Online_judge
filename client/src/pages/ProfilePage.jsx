@@ -80,16 +80,16 @@ const ProfilePage = () => {
   };
 
   if (loading)
-    return <p className="text-center p-6 text-gray-500">⏳ Loading profile...</p>;
+    return <p className="text-center p-6 text-gray-500"> Loading profile...</p>;
   if (!user)
-    return <p className="text-center p-6 text-red-500">⚠️ Failed to load user data.</p>;
+    return <p className="text-center p-6 text-red-500"> Failed to load user data.</p>;
 
   // First-letter avatar
   const firstLetter = user.name ? user.name[0].toUpperCase() : "?";
 
   return (
     <div className="max-w-5xl mx-auto mt-10 bg-gray-900 text-white p-8 rounded-2xl shadow-lg space-y-8">
-      <h2 className="text-4xl font-bold text-yellow-400">👤 Profile</h2>
+      <h2 className="text-4xl font-bold text-yellow-400"> Profile</h2>
 
       {/* Top section: Avatar + basic info */}
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
