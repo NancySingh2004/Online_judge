@@ -206,7 +206,7 @@ export default function Dashboard() {
                 {getGreeting()}, {user?.name || "Coder"}!
               </motion.h2>
               <p className="text-gray-400 text-sm">
-                Ready to code and compete 💻
+                Ready to code and compete 
               </p>
             </div>
 
@@ -376,7 +376,7 @@ export default function Dashboard() {
             transition={{ delay: 0.6 + i * 0.15 }}
           >
             <title>
-              {d.day}: {d.solved ? "Solved ✅" : "Not Solved ❌"}
+              {d.day}: {d.solved ? "Solved " : "Not Solved "}
             </title>
           </motion.circle>
         );
@@ -388,7 +388,7 @@ export default function Dashboard() {
   <div className="mt-5 flex items-center justify-between">
     <p className="text-gray-300 text-sm">Current Streak</p>
     <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500/20 px-3 py-1 text-sm font-semibold text-yellow-400 shadow-inner">
-      {computeStreak()} 🔥
+      {computeStreak()} 
     </span>
   </div>
 </div>
