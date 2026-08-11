@@ -69,11 +69,11 @@ const ProblemDetails = () => {
       {/* Optional: Show Edit button */}
       {user?.role === 'admin' && (
       <Link to={`/edit/${problem._id}`} className="bg-yellow-500 text-white px-4 py-2 rounded">
-        ✏️ Edit Problem
+         Edit Problem
       </Link>
       )}
       <Link to={`/solve/${problem._id}`}>
-  <button className="btn btn-primary mt-4">📝 Solve Now</button>
+  <button className="btn btn-primary mt-4"> Solve Now</button>
 </Link>
      
     </div>
